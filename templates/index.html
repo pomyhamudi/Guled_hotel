@@ -11,7 +11,23 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <main class="page-shell">
+    <header class="site-header" id="top">
+        <a class="site-brand" href="#top" aria-label="Guled home">
+            <span class="brand-mark" aria-hidden="true">G</span>
+            <span class="brand-name">GULED</span>
+        </a>
+        <nav class="site-nav" aria-label="Main navigation">
+            <a href="#services">Services</a>
+            <a href="#rooms">Rooms</a>
+            <a href="#dining">Dining</a>
+            <a href="#order">Order</a>
+            <a href="#concierge">Concierge</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <a class="nav-cta" href="#order">Place an order <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <div class="page-shell" id="concierge">
         <section class="welcome-panel" aria-label="Guled">
             <div class="brand-lockup">
                 <span class="brand-mark" aria-hidden="true">G</span>
@@ -26,12 +42,17 @@
                     Your personal guide to all the details that make
                     a visit feel special.
                 </p>
+                <div class="welcome-actions">
+                    <a href="#rooms" class="welcome-button">Explore rooms <span aria-hidden="true">↗</span></a>
+                    <a href="#chat-messages" class="welcome-text-link">Ask our concierge</a>
+                </div>
             </div>
 
             <div class="welcome-bottom">
                 <div class="welcome-rule"></div>
                 <p>Good to know, lovely to stay.</p>
                 <span>HOSPITALITY, WITH HEART</span>
+                <div class="welcome-coordinates" aria-hidden="true">A STAY TO REMEMBER <span>·</span> GULED</div>
             </div>
             <div class="ambient-orb ambient-orb-one" aria-hidden="true"></div>
             <div class="ambient-orb ambient-orb-two" aria-hidden="true"></div>
@@ -49,8 +70,10 @@
                     <p><span class="status-dot"></span> Here to help with your stay</p>
                 </div>
                 <nav class="header-contact-actions" aria-label="Contact Guled">
-                    <a href="tel:0792194284" aria-label="Call Guled at 0792194284"
-                       title="Call Guled">
+                    <a href="https://wa.me/254792194284"
+                       aria-label="Message Guled on WhatsApp at 0792194284"
+                       title="Message Guled on WhatsApp"
+                       target="_blank" rel="noopener noreferrer">
                         <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
                             <path d="M6.2 3.5h2.1l1.1 3.1-1.6 1.2a12 12 0 0 0 4.4 4.4l1.2-1.6 3.1 1.1v2.1a1.7 1.7 0 0 1-1.8 1.7A12.8 12.8 0 0 1 4.5 5.3a1.7 1.7 0 0 1 1.7-1.8Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
@@ -62,7 +85,7 @@
                             <path d="M3 5.5h14v9H3zM3.5 6l6.5 5 6.5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </a>
-                </nav> 
+                </nav>
                 <span class="header-label">G <span>·</span> 01</span>
             </header>
 
@@ -109,7 +132,290 @@
 
             <p class="footer-note">A warm welcome, whenever you need one.</p>
         </section>
+    </div>
+
+    <main class="content-sections">
+        <div class="section-intro">
+            <span class="eyebrow">The Guled experience</span>
+            <p>A considered stay, from the first welcome to the last cup of tea.</p>
+        </div>
+
+        <section class="section-shell services-section" id="services">
+            <div class="section-header">
+                <div>
+                    <span class="eyebrow">Thoughtful essentials</span>
+                    <h2>Services for your stay</h2>
+                </div>
+                <a href="#concierge" class="section-link">Ask the concierge</a>
+            </div>
+
+            <div class="service-grid">
+                <article class="service-card">
+                    <span class="service-number">01 <span>·</span> STAY</span>
+                    <h3>Room options</h3>
+                    <p>Choose the space that suits your visit, with clear nightly rates for our listed room types.</p>
+                    <ul>
+                        <li>One-bedroom room — KSH 10,000 per night</li>
+                        <li>Two-bedroom room — KSH 15,000 per night</li>
+                    </ul>
+                    <a href="#rooms">Explore room details <span aria-hidden="true">↗</span></a>
+                </article>
+
+                <article class="service-card">
+                    <span class="service-number">02 <span>·</span> DINE</span>
+                    <h3>Food & drinks</h3>
+                    <p>Find a few familiar favourites and ask the front desk about ordering or menu details.</p>
+                    <ul>
+                        <li>Chapati — KSH 50</li>
+                        <li>Tea — KSH 100</li>
+                        <li>Coffee — KSH 150–400</li>
+                        <li>Other food items — KSH 450–1,500</li>
+                    </ul>
+                    <a href="#dining">View dining details <span aria-hidden="true">↗</span></a>
+                </article>
+
+                <article class="service-card">
+                    <span class="service-number">03 <span>·</span> CONNECT</span>
+                    <h3>Personal assistance</h3>
+                    <p>Our concierge can point you to listed prices and menu information. The front desk can help with booking requests and questions that need confirmation.</p>
+                    <ul>
+                        <li>Ask about room availability</li>
+                        <li>Request booking or restaurant information</li>
+                        <li>Confirm amenities and other details directly</li>
+                    </ul>
+                    <a href="https://wa.me/254792194284" target="_blank" rel="noopener noreferrer">Message us on WhatsApp <span aria-hidden="true">↗</span></a>
+                </article>
+            </div>
+            <p class="services-note">Availability, bookings, restaurant hours, and amenities are confirmed by the front desk.</p>
+        </section>
+
+        <section class="section-shell rooms-section" id="rooms">
+            <div class="section-header">
+                <div>
+                    <span class="eyebrow">Stay well</span>
+                    <h2>Rooms & suites</h2>
+                </div>
+                <a href="#contact" class="section-link">Book a stay</a>
+            </div>
+
+            <div class="room-grid">
+                <article class="room-card">
+                    <div class="room-art room-art-one" role="img" aria-label="Illustrated one-bedroom room at Guled">
+                        <span class="room-art-number">01</span>
+                        <span class="room-art-caption">A QUIET PLACE TO RESET</span>
+                        <span class="room-art-window" aria-hidden="true"></span>
+                    </div>
+                    <div class="room-body">
+                        <span class="room-badge">One bedroom</span>
+                        <h3>Quiet Comfort Suite</h3>
+                        <p>Soft linens, warm natural light, and a restful place to recharge after a busy day.</p>
+                        <div class="room-meta">
+                            <strong>KSH 10,000</strong>
+                            <span>per night</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="room-card">
+                    <div class="room-art room-art-two" role="img" aria-label="Illustrated two-bedroom room at Guled">
+                        <span class="room-art-number">02</span>
+                        <span class="room-art-caption">SPACE TO FEEL AT HOME</span>
+                        <span class="room-art-window" aria-hidden="true"></span>
+                    </div>
+                    <div class="room-body">
+                        <span class="room-badge">Two bedrooms</span>
+                        <h3>Family Retreat</h3>
+                        <p>Generous space, practical comfort, and a timeless retreat designed for sharing.</p>
+                        <div class="room-meta">
+                            <strong>KSH 15,000</strong>
+                            <span>per night</span>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="room-card">
+                    <div class="room-art room-art-three" role="img" aria-label="Illustrated signature room at Guled">
+                        <span class="room-art-number">03</span>
+                        <span class="room-art-caption">A SLOWER KIND OF STAY</span>
+                        <span class="room-art-window" aria-hidden="true"></span>
+                    </div>
+                    <div class="room-body">
+                        <span class="room-badge">Signature</span>
+                        <h3>Garden View Hideaway</h3>
+                        <p>Thoughtful details, a slow morning feel, and a calm home-away-from-home atmosphere.</p>
+                        <div class="room-meta">
+                            <strong>KSH 18,000</strong>
+                            <span>per night</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="section-shell dining-section" id="dining">
+            <div class="section-header">
+                <div>
+                    <span class="eyebrow">Fresh flavours</span>
+                    <h2>Dining & drinks</h2>
+                </div>
+                <a href="#order" class="section-link">Place an order</a>
+            </div>
+
+            <div class="food-layout">
+                <div class="food-feature">
+                    <img src="{{ url_for('static', filename='images/3-Chicken-Shawarma-Wrap-Overhead-Pita.jpg') }}" alt="Fresh shawarma wrap and plated food">
+                    <div class="food-feature-copy">
+                        <span class="food-pill">Chef's table</span>
+                        <h3>Seasonal plates made to linger over.</h3>
+                    </div>
+                </div>
+
+                <div class="food-menu">
+                    <div class="menu-item">
+                        <div>
+                            <span class="menu-name">Chapati</span>
+                            <span class="menu-desc">Simple, warm, and freshly made</span>
+                        </div>
+                        <strong>KSH 50</strong>
+                    </div>
+                    <div class="menu-item">
+                        <div>
+                            <span class="menu-name">Tea</span>
+                            <span class="menu-desc">A gentle cup to begin the day</span>
+                        </div>
+                        <strong>KSH 100</strong>
+                    </div>
+                    <div class="menu-item">
+                        <div>
+                            <span class="menu-name">Coffee</span>
+                            <span class="menu-desc">House brew and signature blends</span>
+                        </div>
+                        <strong>KSH 150–400</strong>
+                    </div>
+                    <div class="menu-item">
+                        <div>
+                            <span class="menu-name">Signature meals</span>
+                            <span class="menu-desc">From casual bites to full plates</span>
+                        </div>
+                        <strong>KSH 450–1500</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="food-gallery" aria-label="A look at our food">
+                <img src="{{ url_for('static', filename='images/images (3).jpg') }}" alt="Grilled chicken and fresh sides">
+                <img src="{{ url_for('static', filename='images/images (4).jpg') }}" alt="Rice with seasoned meat and vegetables">
+                <img src="{{ url_for('static', filename='images/Easy-Blackberry-Basil-Pizza-ChelseasMessyApron-1200-1.webp') }}" alt="Pizza topped with basil and blackberries">
+            </div>
+        </section>
+
+        <section class="section-shell order-section" id="order">
+            <div class="order-intro">
+                <span class="eyebrow">Made for you</span>
+                <h2>Send us your order.</h2>
+                <p>Tell us what you’d like and how to reach you. We’ll open WhatsApp with your request ready to review and send.</p>
+            </div>
+
+            <form id="order-form" class="order-form">
+                <div class="order-fields">
+                    <div class="form-field">
+                        <label for="order-name">Your name</label>
+                        <input id="order-name" name="name" type="text"
+                               autocomplete="name" placeholder="e.g. Amina Hassan" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="order-phone">Phone number</label>
+                        <input id="order-phone" name="phone" type="tel"
+                               autocomplete="tel" placeholder="e.g. 0792 194 284" required>
+                    </div>
+                    <div class="form-field form-field-wide">
+                        <label for="order-email">Email address</label>
+                        <input id="order-email" name="email" type="email"
+                               autocomplete="email" placeholder="you@example.com" required>
+                    </div>
+                    <div class="form-field form-field-wide">
+                        <label for="order-details">What would you like to order?</label>
+                        <textarea id="order-details" name="order" rows="5"
+                                  placeholder="List your items, quantities, and any notes for the kitchen..." required></textarea>
+                    </div>
+                </div>
+
+                <label class="order-consent">
+                    <input type="checkbox" name="consent" required>
+                    <span>I agree to share these details with Guled through WhatsApp so the team can respond to my request.</span>
+                </label>
+
+                <button class="order-submit" type="submit">
+                    Continue to WhatsApp <span aria-hidden="true">↗</span>
+                </button>
+                <p id="order-status" class="order-status" role="status" aria-live="polite"></p>
+                <a id="order-whatsapp-fallback" class="order-whatsapp-fallback"
+                   target="_blank" rel="noopener noreferrer" hidden>
+                    Open WhatsApp draft <span aria-hidden="true">↗</span>
+                </a>
+                <p class="order-privacy">Your details are not saved on this website. WhatsApp opens with a draft message; review it and tap Send to submit your order request.</p>
+            </form>
+        </section>
+
+        <section class="section-shell contact-section" id="contact">
+            <div class="contact-card">
+                <div class="contact-copy">
+                    <span class="eyebrow">Stay in touch</span>
+                    <h2>Let us help you plan a stay that feels just right.</h2>
+                    <p>Call or email our front desk for bookings, room availability, restaurant hours, and any extra details you want to know before you arrive.</p>
+                </div>
+
+                <div class="contact-details">
+                    <a href="https://wa.me/254792194284" class="contact-pill"
+                       target="_blank" rel="noopener noreferrer">
+                        <span class="contact-label">WhatsApp</span>
+                        <strong>0792194284</strong>
+                    </a>
+                    <a href="mailto:guledmohamud099@gmail.com?subject=Message%20for%20Guled" class="contact-pill">
+                        <span class="contact-label">Email</span>
+                        <strong>guledmohamud099@gmail.com</strong>
+                    </a>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <footer class="site-footer">
+        <div class="footer-main">
+            <div class="footer-identity">
+                <a class="site-brand footer-brand" href="#top" aria-label="Guled home">
+                    <span class="brand-mark" aria-hidden="true">G</span>
+                    <span class="brand-name">GULED</span>
+                </a>
+                <p>Good to know, lovely to stay.</p>
+                <span class="footer-motto">HOSPITALITY, WITH HEART</span>
+            </div>
+
+            <nav class="footer-nav" aria-label="Footer navigation">
+                <span class="footer-heading">EXPLORE</span>
+                <a href="#services">Our services</a>
+                <a href="#rooms">Rooms & suites</a>
+                <a href="#dining">Dining</a>
+                <a href="#order">Place an order</a>
+            </nav>
+
+            <div class="footer-contact">
+                <span class="footer-heading">SPEAK WITH US</span>
+                <a href="https://wa.me/254792194284" target="_blank" rel="noopener noreferrer">
+                    WhatsApp <span>0792194284</span>
+                </a>
+                <a href="mailto:guledmohamud099@gmail.com?subject=Message%20for%20Guled">
+                    Email <span>guledmohamud099@gmail.com</span>
+                </a>
+                <a href="#concierge">Chat with our concierge <span aria-hidden="true">↗</span></a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 Guled. A warm welcome, whenever you need one.</span>
+            <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
+        </div>
+    </footer>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
