@@ -3,6 +3,25 @@ const chatForm = document.getElementById("chat-form");
 const messageInput = document.getElementById("message-input");
 const chatMessages = document.getElementById("chat-messages");
 const sendButton = document.getElementById("send-button");
+const chatPanel = document.getElementById("concierge-panel");
+const chatFloatToggle = document.getElementById("chat-float-toggle");
+const chatClose = document.getElementById("chat-close");
+
+function setChatOpen(isOpen) {
+    chatPanel.classList.toggle("is-open", isOpen);
+    chatPanel.setAttribute("aria-hidden", String(!isOpen));
+    chatFloatToggle.setAttribute("aria-expanded", String(isOpen));
+    chatFloatToggle.classList.toggle("is-hidden", isOpen);
+
+    if (isOpen) {
+        messageInput.focus();
+    } else {
+        chatFloatToggle.focus();
+    }
+}
+
+chatFloatToggle.addEventListener("click", () => setChatOpen(true));
+chatClose.addEventListener("click", () => setChatOpen(false));
 
 function createContactIcon(type) {
     const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -126,6 +145,122 @@ document.querySelectorAll("[data-message]").forEach(button => {
 const orderForm = document.getElementById("order-form");
 const orderStatus = document.getElementById("order-status");
 const orderWhatsappFallback = document.getElementById("order-whatsapp-fallback");
+const orderItems = document.getElementById("order-items");
+const orderEmpty = document.getElementById("order-empty");
+const orderCount = document.getElementById("order-count");
+const orderDetails = document.getElementById("order-details");
+const selectedOrderItems = new Map();
+
+function syncOrderDetails() {
+    if (!orderDetails || orderDetails.dataset.generated !== "true") return;
+
+    orderDetails.value = Array.from(selectedOrderItems.values())
+        .map(item => `${item.quantity} × ${item.name} (${item.price})`)
+        .join("\n");
+}
+
+function renderOrder() {
+    const items = Array.from(selectedOrderItems.values());
+    const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
+    orderItems.replaceChildren();
+    orderEmpty.hidden = items.length > 0;
+    orderCount.textContent = `${itemCount} ${itemCount === 1 ? "item" : "items"}`;
+
+    items.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "order-line";
+
+        const details = document.createElement("div");
+        details.className = "order-line-details";
+        const name = document.createElement("strong");
+        name.textContent = item.name;
+        const price = document.createElement("span");
+        price.textContent = item.price;
+        details.append(name, price);
+
+        const controls = document.createElement("div");
+        controls.className = "order-line-controls";
+        controls.innerHTML = `
+            <button type="button" aria-label="Decrease ${item.name} quantity"
+                    data-order-action="decrease" data-order-key="${item.name}">−</button>
+            <span>${item.quantity}</span>
+            <button type="button" aria-label="Increase ${item.name} quantity"
+                    data-order-action="increase" data-order-key="${item.name}">+</button>
+            <button class="order-remove" type="button" aria-label="Remove ${item.name}"
+                    data-order-action="remove" data-order-key="${item.name}">Remove</button>`;
+
+        row.append(details, controls);
+        orderItems.appendChild(row);
+    });
+
+    syncOrderDetails();
+}
+
+document.querySelectorAll(".drink-card").forEach(card => {
+    const caption = card.querySelector("figcaption");
+    if (!caption) return;
+
+    const itemName = caption.textContent.trim();
+    const priceByName = {
+        "Tropical moments": "KSH 800",
+        "An evening pour": "KSH 1,500",
+        "Celebrate simply": "KSH 2,000",
+        "Bright & refreshing": "KSH 600",
+        "A colourful selection": "KSH 1,000",
+        "Made for slow afternoons": "KSH 900",
+        "Freshly poured tea": "KSH 250",
+        "A familiar favourite": "KSH 250",
+        "Made for slow mornings": "KSH 350"
+    };
+    const price = priceByName[itemName] || "KSH 500";
+
+    const addButton = document.createElement("button");
+    addButton.className = "gallery-add";
+    addButton.type = "button";
+    addButton.textContent = `Add · ${price}`;
+    addButton.dataset.orderName = itemName;
+    addButton.dataset.orderPrice = price;
+    addButton.setAttribute("aria-label", `Add ${itemName}, ${price}, to my order`);
+    card.appendChild(addButton);
+});
+
+document.querySelectorAll("[data-order-name]").forEach(button => {
+    button.addEventListener("click", () => {
+        const name = button.dataset.orderName;
+        const current = selectedOrderItems.get(name);
+        selectedOrderItems.set(name, {
+            name,
+            price: button.dataset.orderPrice,
+            quantity: current ? current.quantity + 1 : 1
+        });
+        orderDetails.dataset.generated = "true";
+        renderOrder();
+        document.getElementById("order").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+});
+
+orderItems.addEventListener("click", event => {
+    const button = event.target.closest("[data-order-action]");
+    if (!button) return;
+
+    const key = button.dataset.orderKey;
+    const item = selectedOrderItems.get(key);
+    if (!item) return;
+
+    if (button.dataset.orderAction === "increase") item.quantity += 1;
+    if (button.dataset.orderAction === "decrease") item.quantity -= 1;
+    if (button.dataset.orderAction === "remove" || item.quantity < 1) {
+        selectedOrderItems.delete(key);
+    }
+
+    orderDetails.dataset.generated = "true";
+    renderOrder();
+});
+
+orderDetails.addEventListener("input", () => {
+    orderDetails.dataset.generated = "false";
+});
 
 orderForm.addEventListener("submit", function (event) {
     event.preventDefault();

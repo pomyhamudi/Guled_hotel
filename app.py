@@ -43,29 +43,35 @@ def hotel_chatbot(message):
             f"Please contact us at {FRONT_DESK_PHONE} or {FRONT_DESK_EMAIL}."
         )
 
-    if any(word in text for word in ["menu", "restaurant", "food", "dining"]):
+    if any(
+        word in text
+        for word in [
+            "menu", "restaurant", "food", "dining", "tea", "coffee",
+            "chapati", "signature meal",
+        ]
+    ):
         return (
             "Certainly! Here's our food and drinks menu:\n"
             "Food:\n"
-            "- Chapati: KSH 50\n"
-            "- Other food items: KSH 450-1,500\n"
+            "- Chapati: KSH 500\n"
+            "- Signature meals: KSH 5,000-20,000\n"
             "Drinks:\n"
-            "- Tea: KSH 100\n"
-            "- Coffee varieties: KSH 150-400\n"
+            "- Tea: KSH 250\n"
+            "- Coffee: KSH 350\n"
             f"For ordering, please contact us at {FRONT_DESK_PHONE} or "
             f"{FRONT_DESK_EMAIL}."
         )
 
     if any(word in text for word in ["one bedroom", "one bed room", "1 bedroom", "single bedroom"]):
-        return "Certainly! A one-bedroom room is KSH 10,000 per night."
+        return "Certainly! A one-bedroom room is KSH 15,000 per night."
 
     if any(word in text for word in ["two bedrooms", "two bed rooms", "two bed room", "2 bedrooms", "two bedroom"]):
-        return "Certainly! A two-bedroom room is KSH 15,000 per night."
+        return "Certainly! A two-bedroom room is KSH 20,000 per night."
 
     if any(word in text for word in ["price", "cost", "how much"]):
         return (
-            "Certainly! A one-bedroom room is KSH 10,000 per night, and a "
-            "two-bedroom room is KSH 15,000 per night. Which would you prefer?"
+            "Certainly! A one-bedroom room is KSH 15,000 per night, and a "
+            "two-bedroom room is KSH 20,000 per night. Which would you prefer?"
         )
 
     if any(word in text for word in ["availability", "available", "vacancy", "vacancies"]):
@@ -87,8 +93,8 @@ def hotel_chatbot(message):
 
     if any(word in text for word in ["room", "bedroom", "suite"]):
         return (
-            "Our listed options are a one-bedroom room at KSH 10,000 per night "
-            "and a two-bedroom room at KSH 15,000 per night. "
+            "Our listed options are a one-bedroom room at KSH 15,000 per night "
+            "and a two-bedroom room at KSH 20,000 per night. "
             "Please contact us to ask about descriptions or amenities."
         )
 
@@ -108,6 +114,11 @@ def hotel_chatbot(message):
 @app.route("/")
 def home():
     return render_template("index.html")
+
+
+@app.get("/healthz")
+def health_check():
+    return jsonify({"status": "ok"})
 
 
 @app.route("/chat", methods=["POST"])

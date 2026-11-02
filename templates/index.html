@@ -35,12 +35,12 @@
             </div>
 
             <div class="welcome-copy">
-                <p class="eyebrow"><span></span> A little more considered</p>
-                <h1>Make yourself<br>at <em>home.</em></h1>
+                <p class="eyebrow"><span></span> A stay worth remembering</p>
+                <h1>Arrive as a guest.<br>Leave feeling <em>at home.</em></h1>
                 <p class="welcome-description">
-                    Thoughtful stays begin with thoughtful answers.
-                    Your personal guide to all the details that make
-                    a visit feel special.
+                    Slow mornings, warm welcomes, and thoughtful details.
+                    Discover a stay made for comfort, connection, and the
+                    little moments you will remember.
                 </p>
                 <div class="welcome-actions">
                     <a href="#rooms" class="welcome-button">Explore rooms <span aria-hidden="true">↗</span></a>
@@ -58,7 +58,17 @@
             <div class="ambient-orb ambient-orb-two" aria-hidden="true"></div>
         </section>
 
-        <section class="concierge-panel" aria-label="Hotel concierge chat">
+        <section class="hero-image-panel" aria-label="A calm hotel bedroom at Guled">
+            <img src='{{ url_for("static", filename="images/hotel's/033699213b64b46a757562c6ab1f61b3.jpg") }}'
+                 alt="Guled hotel lobby with stone arches, warm lights, and lush greenery">
+            <div class="hero-image-caption">
+                <span>THE GULED EXPERIENCE</span>
+                <strong>Rooms made for<br>slow mornings.</strong>
+            </div>
+            <span class="hero-image-number" aria-hidden="true">01</span>
+        </section>
+
+        <section id="concierge-panel" class="concierge-panel" aria-label="Hotel concierge chat" aria-hidden="true">
             <header class="chat-header">
                 <div class="assistant-avatar" aria-hidden="true">
                     <svg viewBox="0 0 24 24" fill="none">
@@ -87,6 +97,9 @@
                     </a>
                 </nav>
                 <span class="header-label">G <span>·</span> 01</span>
+                <button id="chat-close" class="chat-close" type="button" aria-label="Close concierge chat">
+                    <span aria-hidden="true">×</span>
+                </button>
             </header>
 
             <div class="conversation-heading">
@@ -134,6 +147,18 @@
         </section>
     </div>
 
+    <button id="chat-float-toggle" class="chat-float-toggle" type="button"
+            aria-label="Talk to me" aria-controls="concierge-panel" aria-expanded="false">
+        <span class="chat-float-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M5 6.5h14v9H11l-4.5 3v-3H5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                <path d="M8.5 10.5h7M8.5 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+        </span>
+        <span>Talk to me</span>
+        <span class="chat-float-dot" aria-hidden="true"></span>
+    </button>
+
     <main class="content-sections">
         <div class="section-intro">
             <span class="eyebrow">The Guled experience</span>
@@ -155,8 +180,8 @@
                     <h3>Room options</h3>
                     <p>Choose the space that suits your visit, with clear nightly rates for our listed room types.</p>
                     <ul>
-                        <li>One-bedroom room — KSH 10,000 per night</li>
-                        <li>Two-bedroom room — KSH 15,000 per night</li>
+                        <li>One-bedroom room — KSH 15,000 per night</li>
+                        <li>Two-bedroom room — KSH 20,000 per night</li>
                     </ul>
                     <a href="#rooms">Explore room details <span aria-hidden="true">↗</span></a>
                 </article>
@@ -166,10 +191,10 @@
                     <h3>Food & drinks</h3>
                     <p>Find a few familiar favourites and ask the front desk about ordering or menu details.</p>
                     <ul>
-                        <li>Chapati — KSH 50</li>
-                        <li>Tea — KSH 100</li>
-                        <li>Coffee — KSH 150–400</li>
-                        <li>Other food items — KSH 450–1,500</li>
+                        <li>Chapati — KSH 500</li>
+                        <li>Tea — KSH 250</li>
+                        <li>Coffee — KSH 350</li>
+                        <li>Signature meals — KSH 5,000–20,000</li>
                     </ul>
                     <a href="#dining">View dining details <span aria-hidden="true">↗</span></a>
                 </article>
@@ -200,53 +225,61 @@
 
             <div class="room-grid">
                 <article class="room-card">
-                    <div class="room-art room-art-one" role="img" aria-label="Illustrated one-bedroom room at Guled">
-                        <span class="room-art-number">01</span>
-                        <span class="room-art-caption">A QUIET PLACE TO RESET</span>
-                        <span class="room-art-window" aria-hidden="true"></span>
+                    <div class="room-photo-gallery" aria-label="One-bedroom room photos">
+                        <img class="room-photo-feature"
+                             src="{{ url_for('static', filename='images/rooms images/Hotel Style Bedroom Ideas.jpg') }}"
+                             alt="One-bedroom room with a king bed and soft neutral decor"
+                             loading="lazy">
+                        <div class="room-photo-supporting">
+                            <img src="{{ url_for('static', filename='images/rooms images/f0884751be17b353c7e1c230369a86a5.jpg') }}"
+                                 alt="Warmly lit bedroom with a neatly made bed"
+                                 loading="lazy">
+                            <img src="{{ url_for('static', filename='images/rooms images/b264abad8ca0aba13dd9679ab7fe41dd.jpg') }}"
+                                 alt="Bedroom interior with a large bed and bedside lamps"
+                                 loading="lazy">
+                        </div>
                     </div>
                     <div class="room-body">
                         <span class="room-badge">One bedroom</span>
-                        <h3>Quiet Comfort Suite</h3>
-                        <p>Soft linens, warm natural light, and a restful place to recharge after a busy day.</p>
-                        <div class="room-meta">
-                            <strong>KSH 10,000</strong>
-                            <span>per night</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="room-card">
-                    <div class="room-art room-art-two" role="img" aria-label="Illustrated two-bedroom room at Guled">
-                        <span class="room-art-number">02</span>
-                        <span class="room-art-caption">SPACE TO FEEL AT HOME</span>
-                        <span class="room-art-window" aria-hidden="true"></span>
-                    </div>
-                    <div class="room-body">
-                        <span class="room-badge">Two bedrooms</span>
-                        <h3>Family Retreat</h3>
-                        <p>Generous space, practical comfort, and a timeless retreat designed for sharing.</p>
+                        <h3>One-bedroom stay</h3>
+                        <p>A calm, comfortable room with a welcoming bed and thoughtful details for a restful stay.</p>
                         <div class="room-meta">
                             <strong>KSH 15,000</strong>
                             <span>per night</span>
                         </div>
+                        <button class="add-to-order" type="button"
+                                data-order-name="One-bedroom stay"
+                                data-order-price="KSH 15,000 per night">
+                            Add to my order <span aria-hidden="true">+</span>
+                        </button>
                     </div>
                 </article>
 
                 <article class="room-card">
-                    <div class="room-art room-art-three" role="img" aria-label="Illustrated signature room at Guled">
-                        <span class="room-art-number">03</span>
-                        <span class="room-art-caption">A SLOWER KIND OF STAY</span>
-                        <span class="room-art-window" aria-hidden="true"></span>
+                    <div class="room-photo-gallery" aria-label="Two-bedroom room photos">
+                        <img class="room-photo-feature"
+                             src="{{ url_for('static', filename='images/rooms images/68401c899d6e3b1afa965080f1793236.jpg') }}"
+                             alt="Bedroom interior in the two-bedroom room option"
+                             loading="lazy">
+                        <div class="room-photo-supporting room-photo-supporting-single">
+                            <img src="{{ url_for('static', filename='images/rooms images/317bc81b44d5b488d6039b5d639b4d07.jpg') }}"
+                                 alt="Bedroom with a bed, warm lighting, and room furnishings"
+                                 loading="lazy">
+                        </div>
                     </div>
                     <div class="room-body">
-                        <span class="room-badge">Signature</span>
-                        <h3>Garden View Hideaway</h3>
-                        <p>Thoughtful details, a slow morning feel, and a calm home-away-from-home atmosphere.</p>
+                        <span class="room-badge">Two bedrooms</span>
+                        <h3>Two-bedroom stay</h3>
+                        <p>Extra room to settle in, ideal for guests who want more space to share their stay.</p>
                         <div class="room-meta">
-                            <strong>KSH 18,000</strong>
+                            <strong>KSH 20,000</strong>
                             <span>per night</span>
                         </div>
+                        <button class="add-to-order" type="button"
+                                data-order-name="Two-bedroom stay"
+                                data-order-price="KSH 20,000 per night">
+                            Add to my order <span aria-hidden="true">+</span>
+                        </button>
                     </div>
                 </article>
             </div>
@@ -276,28 +309,36 @@
                             <span class="menu-name">Chapati</span>
                             <span class="menu-desc">Simple, warm, and freshly made</span>
                         </div>
-                        <strong>KSH 50</strong>
+                        <strong>KSH 500</strong>
+                        <button class="menu-add" type="button" aria-label="Add Chapati to my order"
+                                data-order-name="Chapati" data-order-price="KSH 500">+</button>
                     </div>
                     <div class="menu-item">
                         <div>
                             <span class="menu-name">Tea</span>
                             <span class="menu-desc">A gentle cup to begin the day</span>
                         </div>
-                        <strong>KSH 100</strong>
+                        <strong>KSH 250</strong>
+                        <button class="menu-add" type="button" aria-label="Add Tea to my order"
+                                data-order-name="Tea" data-order-price="KSH 250">+</button>
                     </div>
                     <div class="menu-item">
                         <div>
                             <span class="menu-name">Coffee</span>
                             <span class="menu-desc">House brew and signature blends</span>
                         </div>
-                        <strong>KSH 150–400</strong>
+                        <strong>KSH 350</strong>
+                        <button class="menu-add" type="button" aria-label="Add Coffee to my order"
+                                data-order-name="Coffee" data-order-price="KSH 350">+</button>
                     </div>
                     <div class="menu-item">
                         <div>
                             <span class="menu-name">Signature meals</span>
                             <span class="menu-desc">From casual bites to full plates</span>
                         </div>
-                        <strong>KSH 450–1500</strong>
+                        <strong>KSH 5,000–20,000</strong>
+                        <button class="menu-add" type="button" aria-label="Add Signature meals to my order"
+                                data-order-name="Signature meals" data-order-price="KSH 5,000–20,000">+</button>
                     </div>
                 </div>
             </div>
@@ -306,6 +347,77 @@
                 <img src="{{ url_for('static', filename='images/images (3).jpg') }}" alt="Grilled chicken and fresh sides">
                 <img src="{{ url_for('static', filename='images/images (4).jpg') }}" alt="Rice with seasoned meat and vegetables">
                 <img src="{{ url_for('static', filename='images/Easy-Blackberry-Basil-Pizza-ChelseasMessyApron-1200-1.webp') }}" alt="Pizza topped with basil and blackberries">
+            </div>
+
+            <div class="drinks-gallery-section">
+                <div class="drinks-gallery-heading">
+                    <div>
+                        <span class="eyebrow">Raise a glass</span>
+                        <h3>A little something to sip.</h3>
+                    </div>
+                    <p>Explore the drinks gallery. Please ask the front desk about current availability and prices.</p>
+                </div>
+
+                <div class="drinks-gallery">
+                    <figure class="drink-card drink-card-tall">
+                        <img src="{{ url_for('static', filename='images/drinks/0561e153cadd6a83343ee5d222b94f2e.jpg') }}"
+                             alt="Creamy tropical drink with pineapple garnish" loading="lazy">
+                        <figcaption>Tropical moments</figcaption>
+                    </figure>
+                    <figure class="drink-card">
+                        <img src="{{ url_for('static', filename='images/drinks/004320657309ff919c087334cc923e57.jpg') }}"
+                             alt="Bottle of red wine with a glass" loading="lazy">
+                        <figcaption>An evening pour</figcaption>
+                    </figure>
+                    <figure class="drink-card">
+                        <img src="{{ url_for('static', filename='images/drinks/59a18c337946c6ccdf4c333d0fc781b2.jpg') }}"
+                             alt="Sparkling wine bottle and glass" loading="lazy">
+                        <figcaption>Celebrate simply</figcaption>
+                    </figure>
+                    <figure class="drink-card">
+                        <img src="{{ url_for('static', filename='images/drinks/f9122a8c355a2d99b2d08054f6898568.jpg') }}"
+                             alt="Iced orange drink with fresh citrus and mint" loading="lazy">
+                        <figcaption>Bright & refreshing</figcaption>
+                    </figure>
+                    <figure class="drink-card">
+                        <img src="{{ url_for('static', filename='images/drinks/6d94f8b826f411e6669b61acc5db3927.jpg') }}"
+                             alt="Colorful selection of mixed drinks" loading="lazy">
+                        <figcaption>A colourful selection</figcaption>
+                    </figure>
+                    <figure class="drink-card drink-card-tall">
+                        <img src="{{ url_for('static', filename='images/drinks/a0a3c6fffacd78afc8540230d0799d42.jpg') }}"
+                             alt="Orange cocktail with citrus garnish" loading="lazy">
+                        <figcaption>Made for slow afternoons</figcaption>
+                    </figure>
+                </div>
+            </div>
+
+            <div class="drinks-gallery-section coffee-gallery-section">
+                <div class="drinks-gallery-heading">
+                    <div>
+                        <span class="eyebrow">Coffee & tea</span>
+                        <h3>Make room for a warm cup.</h3>
+                    </div>
+                    <p>Take a look at our hot drinks. Ask the front desk about available options and prices.</p>
+                </div>
+
+                <div class="coffee-gallery" aria-label="Coffee and tea gallery">
+                    <figure class="drink-card">
+                        <img src="{{ url_for('static', filename='images/coffee/7bfda2a39398c93e8e96b04d361222e3.jpg') }}"
+                             alt="A cup of freshly poured tea" loading="lazy">
+                        <figcaption>Freshly poured tea</figcaption>
+                    </figure>
+                    <figure class="drink-card">
+                        <img src="{{ url_for('static', filename='images/coffee/762d96984b070f3bf2e5407df7b91c43.jpg') }}"
+                             alt="A warm cup of tea served in a floral cup" loading="lazy">
+                        <figcaption>A familiar favourite</figcaption>
+                    </figure>
+                    <figure class="drink-card">
+                        <img src="{{ url_for('static', filename='images/coffee/609780df1e1e65e958502c04ebf2f526.jpg') }}"
+                             alt="Latte art in a dark ceramic coffee cup" loading="lazy">
+                        <figcaption>Made for slow mornings</figcaption>
+                    </figure>
+                </div>
             </div>
         </section>
 
@@ -317,6 +429,14 @@
             </div>
 
             <form id="order-form" class="order-form">
+                <div id="order-summary" class="order-summary" aria-live="polite">
+                    <div class="order-summary-heading">
+                        <h3>Your order</h3>
+                        <span id="order-count">0 items</span>
+                    </div>
+                    <p id="order-empty">Choose a room or dish above and it will appear here.</p>
+                    <div id="order-items" class="order-items"></div>
+                </div>
                 <div class="order-fields">
                     <div class="form-field">
                         <label for="order-name">Your name</label>
