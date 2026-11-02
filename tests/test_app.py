@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import Mock, patch
 
 from app import app
 
@@ -45,6 +46,55 @@ class HotelAppTests(unittest.TestCase):
                     "KSH 500", "KSH 250", "KSH 350", "KSH 5,000-20,000"
                 ):
                     self.assertIn(expected_price, reply)
+
+    @patch("app.get_supabase_client")
+    def test_order_is_saved_with_consent(self, get_supabase_client):
+        supabase = Mock()
+        get_supabase_client.return_value = supabase
+        payload = {
+            "customer_name": "Amina Hassan",
+            "phone": "0792194284",
+            "email": "amina@example.com",
+            "order_details": "One-bedroom stay",
+            "consent": True,
+        }
+
+        response = self.client.post("/api/orders", json=payload)
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.get_json(), {"status": "saved"})
+        supabase.table.assert_called_once_with("hotel_orders")
+        supabase.table.return_value.insert.assert_called_once_with({
+            "customer_name": "Amina Hassan",
+            "phone": "0792194284",
+            "email": "amina@example.com",
+            "order_details": "One-bedroom stay",
+            "consent_received": True,
+        })
+
+    @patch("app.get_supabase_client", return_value=None)
+    def test_order_reports_missing_supabase_config(self, get_supabase_client):
+        response = self.client.post("/api/orders", json={
+            "customer_name": "Amina Hassan",
+            "phone": "0792194284",
+            "email": "amina@example.com",
+            "order_details": "One-bedroom stay",
+            "consent": True,
+        })
+
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.get_json(), {"error": "Order storage is not configured."})
+
+    def test_order_requires_explicit_consent(self):
+        response = self.client.post("/api/orders", json={
+            "customer_name": "Amina Hassan",
+            "phone": "0792194284",
+            "email": "amina@example.com",
+            "order_details": "One-bedroom stay",
+            "consent": False,
+        })
+
+        self.assertEqual(response.status_code, 400)
 
 
 if __name__ == "__main__":

@@ -262,7 +262,7 @@ orderDetails.addEventListener("input", () => {
     orderDetails.dataset.generated = "false";
 });
 
-orderForm.addEventListener("submit", function (event) {
+orderForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     if (!orderForm.reportValidity()) return;
@@ -280,10 +280,37 @@ orderForm.addEventListener("submit", function (event) {
     ].join("\n");
     const whatsappUrl = new URL("https://wa.me/254792194284");
     whatsappUrl.searchParams.set("text", orderMessage);
-
     orderWhatsappFallback.href = whatsappUrl.toString();
-    orderWhatsappFallback.hidden = false;
-    window.open(whatsappUrl.toString(), "_blank", "noopener,noreferrer");
-    orderStatus.textContent =
-        "WhatsApp opened with your draft. Review the details and tap Send to submit your request.";
+    orderWhatsappFallback.hidden = true;
+    orderStatus.textContent = "Saving your request securely...";
+    const submitButton = orderForm.querySelector(".order-submit");
+    submitButton.disabled = true;
+
+    try {
+        const response = await fetch("/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                customer_name: formData.get("name"),
+                phone: formData.get("phone"),
+                email: formData.get("email"),
+                order_details: formData.get("order"),
+                consent: formData.get("consent") === "on"
+            })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Order save failed.");
+
+        orderWhatsappFallback.hidden = false;
+        orderStatus.textContent =
+            "Your request is saved. Open the WhatsApp draft to review it and tap Send.";
+        window.open(whatsappUrl.toString(), "_blank", "noopener,noreferrer");
+    } catch (error) {
+        orderWhatsappFallback.hidden = false;
+        orderStatus.textContent =
+            "We could not save your request. You can still contact us using the WhatsApp draft below.";
+        console.error(error);
+    } finally {
+        submitButton.disabled = false;
+    }
 });

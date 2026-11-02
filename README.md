@@ -9,7 +9,9 @@ A Flask hotel information site with a chat concierge and WhatsApp order requests
 3. Review the web service from `render.yaml` and deploy it.
 4. Confirm the deployed service's `/healthz` endpoint returns `{"status":"ok"}`.
 
-The blueprint installs `requirements.txt`, starts the app with Gunicorn, and configures the health check. No environment secrets are required by the current app.
+The blueprint installs `requirements.txt`, starts the app with Gunicorn, and configures the health check. To enable order storage, add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` as private environment variables in Render. Never expose the service-role key in browser code or commit it to Git.
+
+Before enabling order submissions, apply the SQL migration in `supabase/migrations` to your Supabase project. For local development, copy `.env.example` to `.env` and add your project URL and service-role key.
 
 ## Run locally
 

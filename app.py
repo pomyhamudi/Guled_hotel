@@ -1,7 +1,10 @@
 
 import os
 
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -14,6 +17,17 @@ def contact_front_desk():
         f"Please call our front desk at {FRONT_DESK_PHONE} or email "
         f"{FRONT_DESK_EMAIL} for assistance."
     )
+
+
+def get_supabase_client():
+    supabase_url = os.getenv("SUPABASE_URL")
+    service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    if not supabase_url or not service_role_key:
+        return None
+
+    from supabase import create_client
+
+    return create_client(supabase_url, service_role_key)
 
 
 def hotel_chatbot(message):
@@ -119,6 +133,55 @@ def home():
 @app.get("/healthz")
 def health_check():
     return jsonify({"status": "ok"})
+
+
+@app.post("/api/orders")
+def create_order():
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "Please submit order details as JSON."}), 400
+
+    customer_name = data.get("customer_name")
+    phone = data.get("phone")
+    email = data.get("email")
+    order_details = data.get("order_details")
+    if not all(isinstance(value, str) for value in (customer_name, phone, email, order_details)):
+        return jsonify({"error": "Please complete all order fields."}), 400
+
+    customer_name = customer_name.strip()
+    phone = phone.strip()
+    email = email.strip()
+    order_details = order_details.strip()
+    if (
+        not customer_name
+        or len(customer_name) > 120
+        or not phone
+        or len(phone) > 40
+        or "@" not in email
+        or len(email) > 254
+        or not order_details
+        or len(order_details) > 5000
+        or data.get("consent") is not True
+    ):
+        return jsonify({"error": "Please check your details and consent, then try again."}), 400
+
+    try:
+        supabase = get_supabase_client()
+        if supabase is None:
+            return jsonify({"error": "Order storage is not configured."}), 503
+
+        supabase.table("hotel_orders").insert({
+            "customer_name": customer_name,
+            "phone": phone,
+            "email": email,
+            "order_details": order_details,
+            "consent_received": True,
+        }).execute()
+    except Exception as error:
+        app.logger.warning("Supabase order save failed (%s)", type(error).__name__)
+        return jsonify({"error": "We could not save your order. Please try again."}), 503
+
+    return jsonify({"status": "saved"}), 201
 
 
 @app.route("/chat", methods=["POST"])
