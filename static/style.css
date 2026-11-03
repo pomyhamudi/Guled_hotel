@@ -102,11 +102,14 @@ input {
 
 .room-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 22px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    align-items: stretch;
 }
 
 .room-card {
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
     border: 1px solid rgba(52, 77, 62, 0.09);
     border-radius: 18px;
@@ -392,6 +395,7 @@ input {
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.19em;
+    text-transform: uppercase;
 }
 
 .welcome-copy {
@@ -1054,6 +1058,7 @@ body {
 .site-brand .brand-name {
     font-size: 10px;
     letter-spacing: 0.2em;
+    text-transform: uppercase;
 }
 
 .site-nav {
@@ -1770,6 +1775,10 @@ body {
 }
 
 @media (max-width: 900px) {
+    .room-grid {
+        grid-template-columns: 1fr;
+    }
+
     .order-section {
         grid-template-columns: 1fr;
         gap: 24px;
@@ -1975,6 +1984,7 @@ body {
 
 .room-photo-gallery {
     display: grid;
+    grid-template-columns: 1.35fr 0.65fr;
     gap: 8px;
     padding: 10px 10px 0;
     background: #fff;
@@ -2002,12 +2012,13 @@ body {
 
 .room-photo-supporting-single {
     grid-template-columns: 1fr;
-    width: 66.666%;
+    width: 100%;
+    max-width: 70%;
     justify-self: center;
 }
 
 .room-photo-supporting-single img {
-    aspect-ratio: 1;
+    aspect-ratio: 1 / 1;
 }
 
 .drinks-gallery-section {

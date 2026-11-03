@@ -151,53 +151,56 @@ const orderCount = document.getElementById("order-count");
 const orderDetails = document.getElementById("order-details");
 const selectedOrderItems = new Map();
 
-function syncOrderDetails() {
-    if (!orderDetails || orderDetails.dataset.generated !== "true") return;
+if (!orderForm || !orderItems || !orderEmpty || !orderCount || !orderDetails) {
+    console.warn("Order form elements are missing; order interactions were skipped.");
+} else {
+    function syncOrderDetails() {
+        if (orderDetails.dataset.generated !== "true") return;
 
-    orderDetails.value = Array.from(selectedOrderItems.values())
-        .map(item => `${item.quantity} × ${item.name} (${item.price})`)
-        .join("\n");
-}
+        orderDetails.value = Array.from(selectedOrderItems.values())
+            .map(item => `${item.quantity} × ${item.name} (${item.price})`)
+            .join("\n");
+    }
 
-function renderOrder() {
-    const items = Array.from(selectedOrderItems.values());
-    const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+    function renderOrder() {
+        const items = Array.from(selectedOrderItems.values());
+        const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
-    orderItems.replaceChildren();
-    orderEmpty.hidden = items.length > 0;
-    orderCount.textContent = `${itemCount} ${itemCount === 1 ? "item" : "items"}`;
+        orderItems.replaceChildren();
+        orderEmpty.hidden = items.length > 0;
+        orderCount.textContent = `${itemCount} ${itemCount === 1 ? "item" : "items"}`;
 
-    items.forEach(item => {
-        const row = document.createElement("div");
-        row.className = "order-line";
+        items.forEach(item => {
+            const row = document.createElement("div");
+            row.className = "order-line";
 
-        const details = document.createElement("div");
-        details.className = "order-line-details";
-        const name = document.createElement("strong");
-        name.textContent = item.name;
-        const price = document.createElement("span");
-        price.textContent = item.price;
-        details.append(name, price);
+            const details = document.createElement("div");
+            details.className = "order-line-details";
+            const name = document.createElement("strong");
+            name.textContent = item.name;
+            const price = document.createElement("span");
+            price.textContent = item.price;
+            details.append(name, price);
 
-        const controls = document.createElement("div");
-        controls.className = "order-line-controls";
-        controls.innerHTML = `
-            <button type="button" aria-label="Decrease ${item.name} quantity"
-                    data-order-action="decrease" data-order-key="${item.name}">−</button>
-            <span>${item.quantity}</span>
-            <button type="button" aria-label="Increase ${item.name} quantity"
-                    data-order-action="increase" data-order-key="${item.name}">+</button>
-            <button class="order-remove" type="button" aria-label="Remove ${item.name}"
-                    data-order-action="remove" data-order-key="${item.name}">Remove</button>`;
+            const controls = document.createElement("div");
+            controls.className = "order-line-controls";
+            controls.innerHTML = `
+                <button type="button" aria-label="Decrease ${item.name} quantity"
+                        data-order-action="decrease" data-order-key="${item.name}">−</button>
+                <span>${item.quantity}</span>
+                <button type="button" aria-label="Increase ${item.name} quantity"
+                        data-order-action="increase" data-order-key="${item.name}">+</button>
+                <button class="order-remove" type="button" aria-label="Remove ${item.name}"
+                        data-order-action="remove" data-order-key="${item.name}">Remove</button>`;
 
-        row.append(details, controls);
-        orderItems.appendChild(row);
-    });
+            row.append(details, controls);
+            orderItems.appendChild(row);
+        });
 
-    syncOrderDetails();
-}
+        syncOrderDetails();
+    }
 
-document.querySelectorAll(".drink-card").forEach(card => {
+    document.querySelectorAll(".drink-card").forEach(card => {
     const caption = card.querySelector("figcaption");
     if (!caption) return;
 
@@ -225,92 +228,93 @@ document.querySelectorAll(".drink-card").forEach(card => {
     card.appendChild(addButton);
 });
 
-document.querySelectorAll("[data-order-name]").forEach(button => {
-    button.addEventListener("click", () => {
-        const name = button.dataset.orderName;
-        const current = selectedOrderItems.get(name);
-        selectedOrderItems.set(name, {
-            name,
-            price: button.dataset.orderPrice,
-            quantity: current ? current.quantity + 1 : 1
+    document.querySelectorAll("[data-order-name]").forEach(button => {
+        button.addEventListener("click", () => {
+            const name = button.dataset.orderName;
+            const current = selectedOrderItems.get(name);
+            selectedOrderItems.set(name, {
+                name,
+                price: button.dataset.orderPrice,
+                quantity: current ? current.quantity + 1 : 1
+            });
+            orderDetails.dataset.generated = "true";
+            renderOrder();
+            document.getElementById("order").scrollIntoView({ behavior: "smooth", block: "start" });
         });
+    });
+
+    orderItems.addEventListener("click", event => {
+        const button = event.target.closest("[data-order-action]");
+        if (!button) return;
+
+        const key = button.dataset.orderKey;
+        const item = selectedOrderItems.get(key);
+        if (!item) return;
+
+        if (button.dataset.orderAction === "increase") item.quantity += 1;
+        if (button.dataset.orderAction === "decrease") item.quantity -= 1;
+        if (button.dataset.orderAction === "remove" || item.quantity < 1) {
+            selectedOrderItems.delete(key);
+        }
+
         orderDetails.dataset.generated = "true";
         renderOrder();
-        document.getElementById("order").scrollIntoView({ behavior: "smooth", block: "start" });
     });
-});
 
-orderItems.addEventListener("click", event => {
-    const button = event.target.closest("[data-order-action]");
-    if (!button) return;
+    orderDetails.addEventListener("input", () => {
+        orderDetails.dataset.generated = "false";
+    });
 
-    const key = button.dataset.orderKey;
-    const item = selectedOrderItems.get(key);
-    if (!item) return;
+    orderForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-    if (button.dataset.orderAction === "increase") item.quantity += 1;
-    if (button.dataset.orderAction === "decrease") item.quantity -= 1;
-    if (button.dataset.orderAction === "remove" || item.quantity < 1) {
-        selectedOrderItems.delete(key);
-    }
+        if (!orderForm.reportValidity()) return;
 
-    orderDetails.dataset.generated = "true";
-    renderOrder();
-});
+        const formData = new FormData(orderForm);
+        const orderMessage = [
+            "Hello Guled, I would like to place an order.",
+            "",
+            `Name: ${formData.get("name")}`,
+            `Phone: ${formData.get("phone")}`,
+            `Email: ${formData.get("email")}`,
+            "",
+            "Order details:",
+            formData.get("order")
+        ].join("\n");
+        const whatsappUrl = new URL("https://wa.me/254792194284");
+        whatsappUrl.searchParams.set("text", orderMessage);
+        orderWhatsappFallback.href = whatsappUrl.toString();
+        orderWhatsappFallback.hidden = true;
+        orderStatus.textContent = "Saving your request securely...";
+        const submitButton = orderForm.querySelector(".order-submit");
+        submitButton.disabled = true;
 
-orderDetails.addEventListener("input", () => {
-    orderDetails.dataset.generated = "false";
-});
+        try {
+            const response = await fetch("/api/orders", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    customer_name: formData.get("name"),
+                    phone: formData.get("phone"),
+                    email: formData.get("email"),
+                    order_details: formData.get("order"),
+                    consent: formData.get("consent") === "on"
+                })
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || "Order save failed.");
 
-orderForm.addEventListener("submit", async function (event) {
-    event.preventDefault();
-
-    if (!orderForm.reportValidity()) return;
-
-    const formData = new FormData(orderForm);
-    const orderMessage = [
-        "Hello Guled, I would like to place an order.",
-        "",
-        `Name: ${formData.get("name")}`,
-        `Phone: ${formData.get("phone")}`,
-        `Email: ${formData.get("email")}`,
-        "",
-        "Order details:",
-        formData.get("order")
-    ].join("\n");
-    const whatsappUrl = new URL("https://wa.me/254792194284");
-    whatsappUrl.searchParams.set("text", orderMessage);
-    orderWhatsappFallback.href = whatsappUrl.toString();
-    orderWhatsappFallback.hidden = true;
-    orderStatus.textContent = "Saving your request securely...";
-    const submitButton = orderForm.querySelector(".order-submit");
-    submitButton.disabled = true;
-
-    try {
-        const response = await fetch("/api/orders", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                customer_name: formData.get("name"),
-                phone: formData.get("phone"),
-                email: formData.get("email"),
-                order_details: formData.get("order"),
-                consent: formData.get("consent") === "on"
-            })
-        });
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.error || "Order save failed.");
-
-        orderWhatsappFallback.hidden = false;
-        orderStatus.textContent =
-            "Your request is saved. Open the WhatsApp draft to review it and tap Send.";
-        window.open(whatsappUrl.toString(), "_blank", "noopener,noreferrer");
-    } catch (error) {
-        orderWhatsappFallback.hidden = false;
-        orderStatus.textContent =
-            "We could not save your request. You can still contact us using the WhatsApp draft below.";
-        console.error(error);
-    } finally {
-        submitButton.disabled = false;
-    }
-});
+            orderWhatsappFallback.hidden = false;
+            orderStatus.textContent =
+                "Your request is saved. Open the WhatsApp draft to review it and tap Send.";
+            window.open(whatsappUrl.toString(), "_blank", "noopener,noreferrer");
+        } catch (error) {
+            orderWhatsappFallback.hidden = false;
+            orderStatus.textContent =
+                "We could not save your request. You can still contact us using the WhatsApp draft below.";
+            console.error(error);
+        } finally {
+            submitButton.disabled = false;
+        }
+    });
+}
