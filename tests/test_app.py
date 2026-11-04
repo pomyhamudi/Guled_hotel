@@ -47,10 +47,42 @@ class HotelAppTests(unittest.TestCase):
                 ):
                     self.assertIn(expected_price, reply)
 
-    @patch("app.get_supabase_client")
-    def test_order_is_saved_with_consent(self, get_supabase_client):
-        supabase = Mock()
-        get_supabase_client.return_value = supabase
+    def test_chat_answers_supplied_hotel_faq(self):
+        cases = (
+            (
+                "Are you fake or real?",
+                "I'm Guled Hotel's virtual assistant, not a human.",
+            ),
+            (
+                "Can I request extra pillows?",
+                "Contact reception, and our team will assist you.",
+            ),
+            (
+                "Can I book a room for two people?",
+                "Absolutely! We have accommodation options suitable for two guests.",
+            ),
+        )
+
+        for message, expected_answer in cases:
+            with self.subTest(message=message):
+                response = self.client.post("/chat", json={"message": message})
+
+                self.assertEqual(response.status_code, 200)
+                self.assertIn(expected_answer, response.get_json()["reply"])
+
+    def test_chat_does_not_expose_unconfigured_faq_placeholders(self):
+        response = self.client.post("/chat", json={"message": "What time is check-in?"})
+        reply = response.get_json()["reply"]
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn("[Check-in Time]", reply)
+        self.assertIn("0792194284", reply)
+
+    @patch("app.psycopg.connect")
+    @patch("app.get_database_url", return_value="postgresql://neon/db")
+    def test_order_is_saved_with_consent(self, get_database_url, connect):
+        connection = connect.return_value.__enter__.return_value
+        cursor = connection.cursor.return_value.__enter__.return_value
         payload = {
             "customer_name": "Amina Hassan",
             "phone": "0792194284",
@@ -63,17 +95,18 @@ class HotelAppTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.get_json(), {"status": "saved"})
-        supabase.table.assert_called_once_with("hotel_orders")
-        supabase.table.return_value.insert.assert_called_once_with({
-            "customer_name": "Amina Hassan",
-            "phone": "0792194284",
-            "email": "amina@example.com",
-            "order_details": "One-bedroom stay",
-            "consent_received": True,
-        })
+        connect.assert_called_once_with("postgresql://neon/db", connect_timeout=5)
+        self.assertIn("INSERT INTO public.hotel_orders", cursor.execute.call_args.args[0])
+        self.assertEqual(cursor.execute.call_args.args[1], (
+            "Amina Hassan",
+            "0792194284",
+            "amina@example.com",
+            "One-bedroom stay",
+            True,
+        ))
 
-    @patch("app.get_supabase_client", return_value=None)
-    def test_order_reports_missing_supabase_config(self, get_supabase_client):
+    @patch("app.get_database_url", return_value=None)
+    def test_order_reports_missing_database_config(self, get_database_url):
         response = self.client.post("/api/orders", json={
             "customer_name": "Amina Hassan",
             "phone": "0792194284",

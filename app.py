@@ -1,6 +1,10 @@
 
 import os
+import re
+from difflib import SequenceMatcher
+from pathlib import Path
 
+import psycopg
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify
 
@@ -10,6 +14,76 @@ app = Flask(__name__)
 
 FRONT_DESK_PHONE = "0792194284"
 FRONT_DESK_EMAIL = "guledmohamud099@gmail.com"
+FAQ_PATH = Path(__file__).with_name("hotel_faq.md")
+FAQ_QUESTION_PATTERN = re.compile(
+    r"^\*\*Q\d+:\s*(.*?)\*\*\s*\r?\nA:\s*(.*?)(?=^\*\*Q\d+:|^---$|^# END|\Z)",
+    re.MULTILINE | re.DOTALL,
+)
+FAQ_STOP_WORDS = {
+    "a", "an", "and", "are", "can", "do", "does", "for", "how", "i", "is",
+    "it", "me", "my", "of", "our", "the", "to", "we", "what", "when",
+    "where", "which", "who", "you", "your",
+}
+
+
+def load_hotel_faq():
+    content = FAQ_PATH.read_text(encoding="utf-8")
+    entries = [
+        (question.strip(), answer.strip())
+        for question, answer in FAQ_QUESTION_PATTERN.findall(content)
+    ]
+    if not entries:
+        raise ValueError(f"No questions were found in the hotel FAQ: {FAQ_PATH}")
+    return entries
+
+
+HOTEL_FAQ = load_hotel_faq()
+
+
+def answer_from_faq(message, exact_only=False):
+    def keywords(value):
+        words = re.findall(r"[a-z0-9]+", value.lower())
+        return " ".join(word for word in words if word not in FAQ_STOP_WORDS)
+
+    message_keywords = keywords(message)
+    if not message_keywords:
+        return None
+
+    best_match = None
+    best_score = 0.0
+    message_words = set(message_keywords.split())
+    for question, answer in HOTEL_FAQ:
+        question_keywords = keywords(question)
+        if not question_keywords:
+            continue
+
+        question_words = set(question_keywords.split())
+        overlap = len(message_words & question_words)
+        token_score = (
+            2 * overlap / (len(message_words) + len(question_words))
+            if overlap
+            else 0.0
+        )
+        sequence_score = SequenceMatcher(
+            None, message_keywords, question_keywords
+        ).ratio()
+        score = max(token_score, sequence_score)
+        if score > best_score:
+            best_match = answer
+            best_score = score
+
+    if best_score < 0.6 or best_match is None:
+        return None
+
+    if exact_only and best_score < 1:
+        return None
+
+    answer = best_match.replace("[Hotel Name]", "Guled Hotel")
+    if re.search(r"\[[^]]+\]", answer):
+        if exact_only:
+            return None
+        return "I don't have confirmed details for that yet. " + contact_front_desk()
+    return answer
 
 
 def contact_front_desk():
@@ -19,15 +93,8 @@ def contact_front_desk():
     )
 
 
-def get_supabase_client():
-    supabase_url = os.getenv("SUPABASE_URL")
-    service_role_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
-    if not supabase_url or not service_role_key:
-        return None
-
-    from supabase import create_client
-
-    return create_client(supabase_url, service_role_key)
+def get_database_url():
+    return os.getenv("DATABASE_URL")
 
 
 def hotel_chatbot(message):
@@ -37,6 +104,16 @@ def hotel_chatbot(message):
 
     if not text:
         return "What would you like to know?"
+
+    if "fake" in text and "real" in text:
+        return (
+            "I'm Guled Hotel's virtual assistant, not a human. I can help with "
+            "hotel information. For a person, " + contact_front_desk()
+        )
+
+    exact_faq_reply = answer_from_faq(text, exact_only=True)
+    if exact_faq_reply is not None:
+        return exact_faq_reply
 
     first_word = text.split(maxsplit=1)[0].strip(".,!?") if text else ""
     if first_word in {"hello", "hi", "hey"}:
@@ -93,6 +170,10 @@ def hotel_chatbot(message):
             "I'm unable to confirm room availability in this chat. "
             + contact_front_desk()
         )
+
+    faq_reply = answer_from_faq(text)
+    if faq_reply is not None:
+        return faq_reply
 
     if any(
         word in text
@@ -166,19 +247,22 @@ def create_order():
         return jsonify({"error": "Please check your details and consent, then try again."}), 400
 
     try:
-        supabase = get_supabase_client()
-        if supabase is None:
+        database_url = get_database_url()
+        if not database_url:
             return jsonify({"error": "Order storage is not configured."}), 503
 
-        supabase.table("hotel_orders").insert({
-            "customer_name": customer_name,
-            "phone": phone,
-            "email": email,
-            "order_details": order_details,
-            "consent_received": True,
-        }).execute()
+        with psycopg.connect(database_url, connect_timeout=5) as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO public.hotel_orders
+                        (customer_name, phone, email, order_details, consent_received)
+                    VALUES (%s, %s, %s, %s, %s)
+                    """,
+                    (customer_name, phone, email, order_details, True),
+                )
     except Exception as error:
-        app.logger.warning("Supabase order save failed (%s)", type(error).__name__)
+        app.logger.warning("Neon order save failed (%s)", type(error).__name__)
         return jsonify({"error": "We could not save your order. Please try again."}), 503
 
     return jsonify({"status": "saved"}), 201
